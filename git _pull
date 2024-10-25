@@ -1,0 +1,397 @@
+
+Thursday, Oct 24th 2024
+========================
+VITAL point
+   Developer --- will do the coding given by the Buss Analyst <<< inputs from 
+client
+     |
+   testing
+        \
+       failed >>> errors 
+support team -----> will raise it as in issue/bug
+                  JIRA (tracking tool)
+    L1     L2   L3
+  client  sql  coder (who going to fix code-issues)
+
+Layer 1    Layer 2
+DB         code 
+tables     infuse print , echo variables...
+columns    WRITE the issues in a error log  (separate file)
+port
+user credt
+service
+    orcl
+       \
+     DB service is down
+     DB is having access (rights) issue
+
+NaN
+Bank Id   Account Id
+NaN       fine
+fine      NaN
+             \
+            change request 
+
+take this log --- issues are there ---FIX them
+ reproduce the scenario in STEPS
+
+fix the issue .....tell why this came .....ROOT CAUSE ANALAYS (RCA)
+   \
+  release 
+       \
+     testers all OK
+                \
+             deployed in prod box 
+               (client access it)
+
+>>>> Oct 24th assignment  <<<<
+          f1  f2   f3
+.json     x   x    x    <<<< 2 records
+      \   
+     df                                           ***
+.csv      x   x    x    <<<< 5 records [(a) without header b)with header]
+       \
+     df
+
+.excel                  <<<< 10 records
+        \
+       df 
+read from all the THREE diff sources 
+         \
+        append it into DB  (table --- columns)
+        /
+using df 
+
+>>>> approach of Pandas dealing with Not a Number  Nan  via fillna() and dropna()
+prog-1) NOTE::
+The fillna() method is used to replace NaN values with 0. The result is a DataFrame where all NaN values have been filled.
+
+import pandas as pd
+import numpy as np
+
+# Create a DataFrame with NaN values
+data = {
+    'A': [1, 2, np.nan, 4],
+    'B': [np.nan, 2, 3, 4],
+    'C': [1, 2, 3, np.nan]
+}
+df = pd.DataFrame(data)
+
+print("Original DataFrame:")
+print(df)
+
+# Fill NaN values with 0
+df_filled = df.fillna(0)
+
+print("\nDataFrame after filling NaN values with 0:")
+print(df_filled)
+
+
+prog-2) NOTE:: The dropna() method is used to remove any rows that contain at least one NaN value. The resulting DataFrame only includes rows that have complete data without any NaNs.
+
+import pandas as pd
+import numpy as np
+
+# Create a DataFrame with NaN values
+data = {
+    'A': [1, 2, np.nan, 4],
+    'B': [5, np.nan, 3, 4],
+    'C': [1, 2, 3, 4]
+}
+df = pd.DataFrame(data)
+
+print("Original DataFrame:")
+print(df)
+
+# Drop rows with any NaN values
+df_dropped = df.dropna()
+
+print("\nDataFrame after dropping rows with NaN values:")
+print(df_dropped)
+
+
+prog-3) dropping column which is having NaN
+NOTE::
+The dropna(axis=1) method is called on the DataFrame. 
+The axis=1 argument specifies that you want to drop columns (for rows, you would use axis=0).
+NOTE:: 
+By default, dropna() will drop any column that contains at least one NaN value.
+
+import pandas as pd
+import numpy as np
+
+# Create a DataFrame with NaN values
+data = {
+    'A': [1, 2, np.nan, 4],
+    'B': [5, np.nan, 3, 4],
+    'C': [1, 2, 3, 4]
+}
+df = pd.DataFrame(data)
+
+print("Original DataFrame:")
+print(df)
+
+# Drop columns with any NaN values
+df_dropped_columns = df.dropna(axis=1)
+
+print("\nDataFrame after dropping columns with NaN values:")
+print(df_dropped_columns)
+
+>>> Duplicate record issue - How to handle it ?
+prog-1)
+import pandas as pd
+
+# Sample data for orders
+data = {
+    'OrderID': [101, 102, 103, 101, 104, 102],
+    'CustomerID': [1, 2, 3, 1, 4, 2],
+    'ProductID': [1001, 1002, 1003, 1001, 1004, 1002],
+    'Quantity': [5, 2, 1, 5, 3, 2],
+    'OrderDate': ['2024-01-01', '2024-01-02', '2024-01-03', '2024-01-01', '2024-01-04', '2024-01-02']
+}
+
+# Create a DataFrame
+df_orders = pd.DataFrame(data)
+
+print("Original Orders DataFrame:")
+print(df_orders)
+
+# Identify and drop duplicates based on 'OrderID'
+df_unique_orders = df_orders.drop_duplicates(subset='OrderID', keep='first')
+
+print("\nOrders DataFrame after dropping duplicates:")
+print(df_unique_orders)
+
+NOTE::: The drop_duplicates() method is used with subset='OrderID' to identify duplicates based on the OrderID column. The keep='first' argument retains the first occurrence and drops subsequent duplicates.
+
+prog-2)
+import pandas as pd
+
+# Sample data for shipments
+data = {
+    'ShipmentID': [201, 202, 203, 201, 204, 202],
+    'TrackingNumber': ['TRK1001', 'TRK1002', 'TRK1003', 'TRK1001', 'TRK1004', 'TRK1002'],
+    'Destination': ['City A', 'City B', 'City C', 'City A', 'City D', 'City B'],
+    'ShipmentDate': ['2024-02-01', '2024-02-02', '2024-02-03', '2024-02-01', '2024-02-04', '2024-02-02']
+}
+
+# Create a DataFrame
+df_shipments = pd.DataFrame(data)
+
+print("Original Shipments DataFrame:")
+print(df_shipments)
+
+# Identify and drop duplicates based on 'ShipmentID' and 'TrackingNumber'
+df_unique_shipments = df_shipments.drop_duplicates(subset=['ShipmentID', 'TrackingNumber'], keep='first')
+
+print("\nShipments DataFrame after dropping duplicates:")
+print(df_unique_shipments)
+
+NOTE:::
+The drop_duplicates() method is used with subset=['ShipmentID', 'TrackingNumber'] to identify duplicates based on both columns. Again, keep='first' retains the first occurrence.
+
+
+
+
+
+===============================================
+DB related operation - connecting to MySQL
+import pandas as pd
+from sqlalchemy import create_engine
+
+# Establish connection to MySQL database
+engine = create_engine('mysql+pymysql://test1:hello1@localhost:3306/testdb')  # Update with your credentials
+
+# -----------------------------------------
+# 1. READ operation: Retrieve records from a table
+# -----------------------------------------
+# Read from 'employ' table
+df = pd.read_sql('SELECT * FROM employ', con=engine)
+print("Initial data in 'employ' table:")
+print(df)
+
+# -----------------------------------------
+# 2. CREATE operation: Insert a new record into the table
+# -----------------------------------------
+new_data = pd.DataFrame({
+    'id': [102],
+    'name': ['Shekar Suman'],
+    'dept': ['IT'],
+    'desig': ['Developer'],
+    'salary': [62000]
+})
+
+# Insert the new record into the 'employ' table
+new_data.to_sql('employ', con=engine, if_exists='append', index=False)
+print("\nRecord inserted successfully!")
+
+# Verify the insertion by retrieving the updated data
+df_after_insert = pd.read_sql('SELECT * FROM employ', con=engine)
+print("Data in 'employ' table after insertion:")
+print(df_after_insert)
+
+# -----------------------------------------
+# 3. UPDATE operation: Update a record in the table
+# -----------------------------------------
+with engine.connect() as connection:
+    connection.execute("UPDATE employ SET salary = 65000 WHERE id = 102")
+    print("\nRecord updated successfully!")
+
+# Verify the update by retrieving the updated data
+df_after_update = pd.read_sql('SELECT * FROM employ WHERE id = 102', con=engine)
+print("Data in 'employ' table after update:")
+print(df_after_update)
+
+# -----------------------------------------
+# 4. DELETE operation: Delete a record from the table
+# -----------------------------------------
+with engine.connect() as connection:
+    connection.execute("DELETE FROM employ WHERE id = 102")
+    print("\nRecord deleted successfully!")
+
+# Verify the deletion by retrieving the updated data
+df_after_delete = pd.read_sql('SELECT * FROM employ', con=engine)
+print("Data in 'employ' table after deletion:")
+print(df_after_delete)
+
+>>>>Approach 2) without using ...sqlalchemy
+import mysql.connector
+import pandas as pd
+
+# Establish connection to MySQL database
+conn = mysql.connector.connect(
+    host='VishyAdmin',
+    user='test1',
+    password='Hello123!',
+    database='test5'
+)
+
+# Create a cursor object
+cursor = conn.cursor()
+
+# -----------------------------------------
+# 1. READ operation: Retrieve records from a table
+# -----------------------------------------
+query = "SELECT * FROM employ"
+cursor.execute(query)
+records = cursor.fetchall()
+
+# Convert to DataFrame for easy viewing
+df = pd.DataFrame(records, columns=['id', 'name', 'dept', 'desig', 'salary'])
+print("Initial data in 'employ' table:")
+print(df)
+
+# -----------------------------------------
+# 2. CREATE operation: Insert a new record into the table
+# -----------------------------------------
+insert_query = "INSERT INTO employ (id, name, dept, desig, salary) VALUES (%s, %s, %s, %s, %s)"
+new_record = (101, 'Anand Rao', 'IT', 'Developer', 60000)
+cursor.execute(insert_query, new_record)
+conn.commit()
+print("\nRecord inserted successfully!")
+
+# Verify the insertion by retrieving the updated data
+cursor.execute(query)
+records_after_insert = cursor.fetchall()
+df_after_insert = pd.DataFrame(records_after_insert, columns=['id', 'name', 'dept', 'desig', 'salary'])
+print("Data in 'employ' table after insertion:")
+print(df_after_insert)
+
+# -----------------------------------------
+# 3. UPDATE operation: Update a record in the table
+# -----------------------------------------
+update_query = "UPDATE employ SET salary = 65000 WHERE id = 101"
+cursor.execute(update_query)
+conn.commit()
+print("\nRecord updated successfully!")
+
+# Verify the update by retrieving the updated data
+cursor.execute("SELECT * FROM employ WHERE id = 101")
+updated_record = cursor.fetchall()
+df_after_update = pd.DataFrame(updated_record, columns=['id', 'name', 'dept', 'desig', 'salary'])
+print("Data in 'employ' table after update:")
+print(df_after_update)
+
+# -----------------------------------------
+# 4. DELETE operation: Delete a record from the table
+# -----------------------------------------
+delete_query = "DELETE FROM employ WHERE id = 101"
+cursor.execute(delete_query)
+conn.commit()
+print("\nRecord deleted successfully!")
+
+# Verify the deletion by retrieving the updated data
+cursor.execute(query)
+records_after_delete = cursor.fetchall()
+df_after_delete = pd.DataFrame(records_after_delete, columns=['id', 'name', 'dept', 'desig', 'salary'])
+print("Data in 'employ' table after deletion:")
+print(df_after_delete)
+
+# Close the cursor and connection
+cursor.close()
+conn.close()
+====================== ============================== ============================ ===
+
+approach 3) sqlalchemy acting as ORM
+
+from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+# Define the base class for our models
+Base = declarative_base()
+
+# Define the Employee class
+class Employee(Base):
+    __tablename__ = 'employees'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50))
+    dept = Column(String(50))
+    desig = Column(String(50))
+    salary = Column(Integer)
+
+    def __repr__(self):
+        return f"<Employee(name={self.name}, dept={self.dept}, desig={self.desig}, salary={self.salary})>"
+
+# Database connection setup
+engine = create_engine('mysql+pymysql://test1:hello1@localhost:3306/testdb')
+
+# Create the employees table in the database
+Base.metadata.create_all(engine)
+
+# Create a session to interact with the database
+Session = sessionmaker(bind=engine)
+session = Session()
+
+# CRUD Operations
+
+# 1. Create (Insert)
+new_employee = Employee(name='Sundar Raj', dept='HR', desig='Manager', salary=70000)
+session.add(new_employee)
+session.commit()
+
+# 2. Read (Query)
+employees = session.query(Employee).all()
+print("All employees:")
+for emp in employees:
+    print(emp)
+
+# Query specific employee
+employee = session.query(Employee).filter_by(name='Sundar Raj').first()
+print(f"Employee found: {employee}")
+
+# 3. Update
+employee_to_update = session.query(Employee).filter_by(name='Sundar Raj').first()
+if employee_to_update:
+    employee_to_update.salary = 75000
+    session.commit()
+
+# 4. Delete
+employee_to_delete = session.query(Employee).filter_by(name='Sundar Raj').first()
+if employee_to_delete:
+    session.delete(employee_to_delete)
+    session.commit()
+
+notes_Oct_24.txt
+Displaying notes_Oct_24.txt.
